@@ -7,6 +7,16 @@ import pyupbit
 access = ""
 secret = ""
 
+def get_balance(ticker):
+    """잔고 조회"""
+    balances = upbit.get_balances()
+    for b in balances:
+        if b['currency'] == ticker:
+            if b['balance'] is not None:
+                return float(b['balance'])
+            else:
+                return 0
+
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 
@@ -37,20 +47,21 @@ while True:
        test1=macd[0]-exp3[0]
        test2=macd[1]-exp3[1]
       
-      #  call='매매 필요없음'
-      
+       call='매매 필요없음'
+       krw = get_balance("KRW")
+       print(krw)
        if test1<0 and test2>0:
-         #  call='매도'
+          call='매도'
           eth = get_balance("ETH")
           if eth > 0.00106:
              upbit.sell_market_order("KRW-ETH", eth*0.9995)
          
        if test1>0 and test2<0:
-         #  call='매수'
+          call='매수'
           krw = get_balance("KRW")
           if krw > 5000:
              upbit.buy_market_order("KRW-ETH", 10000*0.9995)
-      #  print('BTC 매매의견: ', call)
+       print('BTC 매매의견: ', call)
 
        time.sleep(1)
 
