@@ -20,6 +20,8 @@ def get_balance(ticker):
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 
+buy_flag = 0
+
 while True:
     try:
         url = "https://api.upbit.com/v1/candles/minutes/10"
@@ -75,7 +77,7 @@ while True:
                 else:
                     buy_flag = 2 
 
-        print('BTC 매매의견: ', call)
+        print('BTC 매매의견: ', call, buy_flag)
 
         time.sleep(1)
 
