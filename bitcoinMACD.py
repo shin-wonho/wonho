@@ -3,6 +3,7 @@ import pandas as pd
 import time
 # import webbrowser
 import pyupbit
+import datetime
 
 access = ""
 secret = ""
@@ -16,6 +17,17 @@ def get_balance(ticker):
                 return float(b['balance'])
             else:
                 return 0
+
+def record_trading(trade):
+    current = datetime.datetime.now()
+    current_time = current.replace(microsecond=0)
+    t_current_time = current_time.strftime('%c')
+    f = open('C:/crytoauto/record.txt', 'a')
+    # 파일에 텍스트 쓰기
+    f.writelines(["\ntime : ", t_current_time])
+    f.writelines(["\nCall : ", call])
+    f.close()
+
 
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
@@ -53,29 +65,34 @@ while True:
         call='매매 필요없음'
     #    krw = get_balance("KRW")
     #    print(krw)
-        if test1<0 and test2>=0 and buy_flag == 1:
+        if test1<0 and test2>=0 and buy_flag == 2:
             call='매도1'
             eth = get_balance("ETH")
             if eth > 0.00106:
                 upbit.sell_market_order("KRW-ETH", eth*0.9995)
                 buy_flag = 0
+                record_trading(call)
 
-        if test1<test2 and buy_flag == 2:
+        if test1<test2 and buy_flag == 1:
             call='매도2'
             eth = get_balance("ETH")
             if eth > 0.00106:
                 upbit.sell_market_order("KRW-ETH", eth*0.9995)
                 buy_flag = 0
+                record_trading(call)
          
         if test1>0 and test2<=0 and buy_flag == 0:
-            call='매수'
             krw = get_balance("KRW")
             if krw > 5000:
                 upbit.buy_market_order("KRW-ETH", 10000*0.9995)
+                record_trading(call)
                 if macd[0] < 0:
+                    call='매수1'
                     buy_flag = 1
                 else:
+                    call='매수2'
                     buy_flag = 2 
+            record_trading(call)
 
         print('BTC 매매의견: ', call, buy_flag)
 
@@ -84,5 +101,3 @@ while True:
     except Exception as e:
        print(e)
        time.sleep(1)
-
-
